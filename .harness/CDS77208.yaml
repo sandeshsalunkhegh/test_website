@@ -26,6 +26,7 @@ pipeline:
                         script: |-
                           # curl --location 'https://example.com/'
                           git clone https://github.com/sandeshsalunkhegh/test_website.git
+                          cd test_website
                           git branch
                     environmentVariables: []
                     outputVariables: []
