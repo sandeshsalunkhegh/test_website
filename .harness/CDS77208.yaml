@@ -1,0 +1,30 @@
+pipeline:
+  name: CDS-77208
+  identifier: CDS77208
+  projectIdentifier: Sandesh_Test
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: St1
+        identifier: St1
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: curl --location 'https://example.com/'
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+        tags: {}
