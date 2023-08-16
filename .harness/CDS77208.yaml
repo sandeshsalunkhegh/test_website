@@ -24,7 +24,7 @@ pipeline:
                       type: Inline
                       spec:
                         script: |-
-                          curl --location 'https://example.com/'
+                          # curl --location 'https://example.com/'
                           git clone https://github.com/sandeshsalunkhegh/test_website.git
                           git branch
                     environmentVariables: []
