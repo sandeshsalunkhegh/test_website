@@ -23,11 +23,7 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: |-
-                          # curl --location 'https://example.com/'
-                          git clone https://github.com/sandeshsalunkhegh/test_website.git
-                          cd test_website
-                          git branch
+                        script: curl --location 'https://example.com/'
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
