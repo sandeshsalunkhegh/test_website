@@ -23,7 +23,9 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: curl --location 'https://example.com/'
+                        script: |-
+                          curl --location 'https://example.com/'
+                          exit 0
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
