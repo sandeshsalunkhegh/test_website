@@ -1,0 +1,51 @@
+template:
+  name: DB Maintenance - Statistics
+  description: Run smart maintenance - statistics Steps
+  tags: {}
+  type: Stage
+  spec:
+    type: Deployment
+    spec:
+      service:
+        serviceRef: <+input>
+        serviceInputs: <+input>
+      deploymentType: WinRm
+      gitOpsEnabled: false
+      environment:
+        environmentRef: <+input>
+        deployToAll: false
+        environmentInputs: <+input>
+        serviceOverrideInputs: <+input>
+        infrastructureDefinitions: <+input>
+      execution:
+        steps:
+          - step:
+              name: Maintain DB Statistics
+              identifier: Maintain_DB_Statistics
+              template:
+                templateRef: DB_Maintenance_Statistics
+                versionLabel: v1
+                gitBranch: test-patch
+                templateInputs:
+                  type: Command
+                  spec:
+                    type: Command
+                    environmentVariables:
+                      - name: dbConnectionString
+                        type: String
+                        value: <+input>
+        rollbackSteps: []
+    failureStrategies:
+      - onFailure:
+          errors:
+            - AllErrors
+          action:
+            type: StageRollback
+    when:
+      pipelineStatus: Success
+      condition: <+execution.steps.Maintain_DB_Statistics.spec.environmentVariables.dbConnectionString> != "NA"
+    gitOpsEnabled: false
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  identifier: DB_Maintenance_StatisticsApply
+  versionLabel: v1
