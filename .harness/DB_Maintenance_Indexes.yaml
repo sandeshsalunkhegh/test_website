@@ -1,0 +1,50 @@
+template:
+  name: DB Maintenance - Indexes
+  description: Run smart maintenance - indexes Steps for all DBs in an Environment
+  tags: {}
+  type: Stage
+  spec:
+    type: Deployment
+    spec:
+      service:
+        serviceRef: <+input>
+        serviceInputs: <+input>
+      deploymentType: WinRm
+      gitOpsEnabled: false
+      environment:
+        environmentRef: <+input>
+        deployToAll: false
+        environmentInputs: <+input>
+        serviceOverrideInputs: <+input>
+        infrastructureDefinitions: <+input>
+      execution:
+        steps:
+          - step:
+              name: Maintain DB Indexes
+              identifier: Maintain_DB_Indexes
+              template:
+                templateRef: DB_Maintenance_Indexes
+                versionLabel: v1
+                gitBranch: test-patch
+                templateInputs:
+                  type: Command
+                  spec:
+                    type: Command
+                    environmentVariables:
+                      - name: dbConnectionString
+                        type: String
+                        value: <+input>
+        rollbackSteps: []
+    failureStrategies:
+      - onFailure:
+          errors:
+            - AllErrors
+          action:
+            type: StageRollback
+    when:
+      pipelineStatus: Success
+      condition: <+execution.steps.Maintain_DB_Statistics.spec.environmentVariables.dbConnectionString> != "NA"
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  identifier: DB_Maintenance_IndexesApply
+  versionLabel: v1
