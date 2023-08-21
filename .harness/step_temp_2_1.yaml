@@ -40,7 +40,7 @@ template:
           value: <+input>
       outputVariables: []
     type: Command
-    timeout: 1d
+    timeout: <+input>
     strategy:
       repeat:
         items: <+stage.output.hosts>
