@@ -14,18 +14,6 @@ pipeline:
             spec:
               service:
                 serviceRef: afDeployment
-                serviceInputs:
-                  serviceDefinition:
-                    type: WinRm
-                    spec:
-                      artifacts:
-                        primary:
-                          primaryArtifactRef: aafreleases
-                          sources:
-                            - identifier: aafreleases
-                              type: ArtifactoryRegistry
-                              spec:
-                                artifactPath: 0.0.0.0
               environment:
                 environmentRef: <+input>
                 environmentInputs: <+input>
