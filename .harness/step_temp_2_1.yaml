@@ -1,0 +1,54 @@
+template:
+  name: DB Maintenance - Indexes
+  description: ""
+  type: Step
+  spec:
+    spec:
+      type: Command
+      onDelegate: false
+      delegateSelectors:
+        - ""
+      commandUnits:
+        - identifier: runSmartMaintenanceIndexesSteps
+          type: Script
+          name: Run smart maintenance indexes DB
+          spec:
+            workingDirectory: "%temp%"
+            shell: PowerShell
+            source:
+              type: Inline
+              spec:
+                type: Inline
+                script: |-
+                  $ErrorActionPreference = 'stop'
+                  if ($env:COMPUTERNAME.ToLower().contains("wvd") )
+                  {
+                  if ('<+spec.environmentVariables.dbConnectionString>' -ne "NA")
+                  {
+                  Import-Module AF.Deployment
+                  write-host "Running smart maintenance indexes on DB: <+spec.environmentVariables.dbConnectionString>"
+                  Run-SQLQuery -sqlQuery "exec  AzureSQLMaintenance 'index'" -DBConnectionString '<+spec.environmentVariables.dbConnectionString>'
+                  }
+                  }
+                  else
+                  {
+                  Write-Host "This step is not eligible for- " $env:COMPUTERNAME
+                  }
+      environmentVariables:
+        - name: dbConnectionString
+          type: String
+          value: <+input>
+      outputVariables: []
+    type: Command
+    timeout: 1d
+    strategy:
+      repeat:
+        items: <+stage.output.hosts>
+    when:
+      stageStatus: Success
+      condition: <+spec.environmentVariables.dbConnectionString> != "NA" && <+spec.host.toLowerCase()>.contains("wvd")
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  tags: {}
+  versionLabel: v1
+  identifier: DB_Maintenance_Indexes
