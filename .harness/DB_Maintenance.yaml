@@ -61,6 +61,7 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+serviceVariables.dbConnectionString>
+                              timeout: <+input>
         - stage:
             name: Maintain statistics DB2
             identifier: Run_smart_maintenance_statistics_DB2
@@ -146,6 +147,7 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+serviceVariables.dbConnectionString2>
+                              timeout: <+input>
         - stage:
             name: Maintain Indexes DB3
             identifier: Maintain_Indexes_DB3
@@ -174,6 +176,7 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+serviceVariables.dbConnectionString3>
+                              timeout: <+input>
   identifier: DM_maintenance_statistics_All
   name: DB Maintenance
   description: Run statistics then indexes on all DBs in given environment
