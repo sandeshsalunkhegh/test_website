@@ -1,0 +1,51 @@
+template:
+  name: DB Maintenance - Statistics
+  description: ""
+  type: Step
+  spec:
+    spec:
+      type: Command
+      onDelegate: false
+      delegateSelectors:
+        - ""
+      commandUnits:
+        - identifier: runSmartMaintenanceStatisticsSteps
+          type: Script
+          name: Run smart maintenance statistics DB
+          spec:
+            workingDirectory: "%temp%"
+            shell: PowerShell
+            source:
+              type: Inline
+              spec:
+                type: Inline
+                script: |-
+                  $ErrorActionPreference = 'stop'
+                  if ($env:COMPUTERNAME.ToLower().contains("wvd") )
+                  {
+                  Import-Module AF.Deployment
+                  write-host "Running smart maintenance statistics on DB: <+spec.environmentVariables.dbConnectionString>" 
+                  Run-SQLQuery -sqlQuery "exec  AzureSQLMaintenance 'statistics'" -DBConnectionString '<+spec.environmentVariables.dbConnectionString>'
+                  }
+                  else
+                  {
+                  Write-Host "This step is not eligible for- " $env:COMPUTERNAME
+                  }
+      environmentVariables:
+        - name: dbConnectionString
+          type: String
+          value: <+input>
+      outputVariables: []
+    type: Command
+    timeout: 1d
+    strategy:
+      repeat:
+        items: <+stage.output.hosts>
+    when:
+      stageStatus: Success
+      condition: <+spec.environmentVariables.dbConnectionString> != "NA" && <+spec.host.toLowerCase()>.contains("wvd")
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  tags: {}
+  versionLabel: v1
+  identifier: DB_Maintenance_Statistics
