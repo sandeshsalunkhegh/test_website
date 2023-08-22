@@ -43,7 +43,7 @@ template:
     when:
       stageStatus: Success
       condition: <+spec.environmentVariables.dbConnectionString> != "NA" && <+spec.host.toLowerCase()>.contains("wvd")
-    timeout: 1d
+    timeout: <+input>
   orgIdentifier: default
   projectIdentifier: CDS71826
   tags: {}
