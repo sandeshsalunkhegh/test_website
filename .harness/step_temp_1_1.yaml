@@ -37,13 +37,13 @@ template:
           value: <+input>
       outputVariables: []
     type: Command
-    timeout: <+input>
     strategy:
       repeat:
         items: <+stage.output.hosts>
     when:
       stageStatus: Success
       condition: <+spec.environmentVariables.dbConnectionString> != "NA" && <+spec.host.toLowerCase()>.contains("wvd")
+    timeout: 1d
   orgIdentifier: default
   projectIdentifier: CDS71826
   tags: {}
