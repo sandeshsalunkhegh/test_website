@@ -20,21 +20,19 @@ template:
       execution:
         steps:
           - step:
-              name: Maintain DB Indexes
-              identifier: Maintain_DB_Indexes
-              template:
-                templateRef: DB_Maintenance_Indexes
-                versionLabel: v1
-                gitBranch: test-patch
-                templateInputs:
-                  type: Command
+              type: ShellScript
+              name: ShellScript_1
+              identifier: ShellScript_1
+              spec:
+                shell: Bash
+                onDelegate: true
+                source:
+                  type: Inline
                   spec:
-                    type: Command
-                    environmentVariables:
-                      - name: dbConnectionString
-                        type: String
-                        value: <+input>
-                  timeout: <+input>
+                    script: echo <+stage.name>
+                environmentVariables: []
+                outputVariables: []
+              timeout: 10m
         rollbackSteps: []
     failureStrategies:
       - onFailure:
@@ -44,8 +42,7 @@ template:
             type: StageRollback
     when:
       pipelineStatus: Success
-      condition: <+execution.steps.Maintain_DB_Statistics.spec.environmentVariables.dbConnectionString>
-        != "NA"
+      condition: <+execution.steps.Maintain_DB_Statistics.spec.environmentVariables.dbConnectionString> != "NA"
   orgIdentifier: default
   projectIdentifier: CDS71826
   identifier: DB_Maintenance_IndexesApply
