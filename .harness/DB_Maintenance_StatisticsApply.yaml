@@ -34,7 +34,6 @@ template:
                       - name: dbConnectionString
                         type: String
                         value: <+input>
-                  timeout: <+input>
         rollbackSteps: []
     failureStrategies:
       - onFailure:
