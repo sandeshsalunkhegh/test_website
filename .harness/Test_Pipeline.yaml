@@ -1,0 +1,68 @@
+pipeline:
+  name: Test_Pipeline
+  identifier: Test_Pipeline
+  projectIdentifier: CDS71826
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Stage_1
+        identifier: Stage_1
+        template:
+          templateRef: DB_Maintenance_IndexesApply
+          versionLabel: v1
+          templateInputs:
+            type: Deployment
+            spec:
+              service:
+                serviceRef: <+input>
+                serviceInputs: <+input>
+              environment:
+                environmentRef: <+input>
+                environmentInputs: <+input>
+                serviceOverrideInputs: <+input>
+                infrastructureDefinitions: <+input>
+              execution:
+                steps:
+                  - step:
+                      identifier: Maintain_DB_Indexes
+                      template:
+                        templateInputs:
+                          type: Command
+                          spec:
+                            type: Command
+                            environmentVariables:
+                              - name: dbConnectionString
+                                type: String
+                                value: <+input>
+                          timeout: <+input>
+    - stage:
+        name: Statistics
+        identifier: Stage_2
+        template:
+          templateRef: DB_Maintenance_StatisticsApply
+          versionLabel: v1
+          templateInputs:
+            type: Deployment
+            spec:
+              service:
+                serviceRef: <+input>
+                serviceInputs: <+input>
+              environment:
+                environmentRef: <+input>
+                environmentInputs: <+input>
+                serviceOverrideInputs: <+input>
+                infrastructureDefinitions: <+input>
+              execution:
+                steps:
+                  - step:
+                      identifier: Maintain_DB_Statistics
+                      template:
+                        templateInputs:
+                          type: Command
+                          spec:
+                            type: Command
+                            environmentVariables:
+                              - name: dbConnectionString
+                                type: String
+                                value: <+input>
