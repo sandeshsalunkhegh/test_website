@@ -18,7 +18,8 @@ pipeline:
                 environmentRef: <+input>
                 environmentInputs: <+input>
                 serviceOverrideInputs: <+input>
-                infrastructureDefinitions: <+input>
+                infrastructureDefinitions:
+                  - identifier: pcdInf
               execution:
                 steps:
                   - step:
