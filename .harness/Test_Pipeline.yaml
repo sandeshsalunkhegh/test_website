@@ -35,7 +35,6 @@ pipeline:
                               - name: dbConnectionString
                                 type: String
                                 value: <+input>
-                          timeout: <+input>
     - stage:
         name: Indexes
         identifier: Indexes
