@@ -35,6 +35,7 @@ pipeline:
                               - name: dbConnectionString
                                 type: String
                                 value: <+input>
+                          timeout: <+input>
     - parallel:
         - stage:
             name: Indexes
@@ -97,3 +98,4 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+input>
+                              timeout: <+input>
