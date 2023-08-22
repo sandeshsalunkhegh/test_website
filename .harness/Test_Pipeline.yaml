@@ -35,34 +35,65 @@ pipeline:
                               - name: dbConnectionString
                                 type: String
                                 value: <+input>
-    - stage:
-        name: Indexes
-        identifier: Indexes
-        template:
-          templateRef: DB_Maintenance_IndexesApply
-          versionLabel: v1
-          templateInputs:
-            type: Deployment
-            spec:
-              service:
-                serviceRef: <+input>
-                serviceInputs: <+input>
-              environment:
-                environmentRef: <+input>
-                environmentInputs: <+input>
-                serviceOverrideInputs: <+input>
-                infrastructureDefinitions: <+input>
-              execution:
-                steps:
-                  - step:
-                      identifier: Maintain_DB_Indexes
-                      template:
-                        templateInputs:
-                          type: Command
-                          spec:
-                            type: Command
-                            environmentVariables:
-                              - name: dbConnectionString
-                                type: String
-                                value: <+input>
-                          timeout: <+input>
+    - parallel:
+        - stage:
+            name: Indexes
+            identifier: Indexes
+            template:
+              templateRef: DB_Maintenance_IndexesApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    serviceRef: <+input>
+                    serviceInputs: <+input>
+                  environment:
+                    environmentRef: <+input>
+                    environmentInputs: <+input>
+                    serviceOverrideInputs: <+input>
+                    infrastructureDefinitions: <+input>
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Indexes
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+input>
+                              timeout: <+input>
+        - stage:
+            name: Statistics 1
+            identifier: Statistics_1
+            template:
+              templateRef: DB_Maintenance_StatisticsApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    serviceRef: <+input>
+                    serviceInputs: <+input>
+                  environment:
+                    environmentRef: <+input>
+                    environmentInputs: <+input>
+                    serviceOverrideInputs: <+input>
+                    infrastructureDefinitions: <+input>
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Statistics
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+input>
