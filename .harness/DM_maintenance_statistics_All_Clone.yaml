@@ -98,34 +98,6 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+serviceVariables.dbConnectionString2>
-        - stage:
-            name: Maintain statistics DB3
-            identifier: Stats_parameter
-            template:
-              templateRef: DB_Maintenance_StatisticsApply
-              versionLabel: v1
-              templateInputs:
-                type: Deployment
-                spec:
-                  service:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  environment:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  execution:
-                    steps:
-                      - step:
-                          identifier: Maintain_DB_Statistics
-                          template:
-                            templateInputs:
-                              type: Command
-                              spec:
-                                type: Command
-                                environmentVariables:
-                                  - name: dbConnectionString
-                                    type: String
-                                    value: <+serviceVariables.dbConnectionString3>
   identifier: DM_maintenance_statistics_All_Clone
   description: Run statistics then indexes on all DBs in given environment
   name: DB Maintenance - Clone
