@@ -6,7 +6,7 @@ pipeline:
   tags: {}
   stages:
     - stage:
-        name: Stage_1
+        name: Indexes
         identifier: Stage_1
         template:
           templateRef: DB_Maintenance_IndexesApply
