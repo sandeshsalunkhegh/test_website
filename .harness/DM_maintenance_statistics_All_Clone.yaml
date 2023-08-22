@@ -1,183 +1,190 @@
----
 pipeline:
-  projectIdentifier: "CDS71826"
-  orgIdentifier: "default"
+  projectIdentifier: CDS71826
+  orgIdentifier: default
   tags: {}
   stages:
-  - stage:
-      name: "Maintain statistics DB1"
-      identifier: "Run_smart_maintenance_statistics"
-      template:
-        templateRef: "DB_Maintenance_StatisticsApply"
-        versionLabel: "v1"
-        templateInputs:
-          type: "Deployment"
-          spec:
-            service:
-              serviceRef: "afDeployment"
-            environment:
-              environmentRef: "<+input>"
-              environmentInputs: "<+input>"
-              serviceOverrideInputs: "<+input>"
-              infrastructureDefinitions: "<+input>"
-            execution:
-              steps:
-              - step:
-                  identifier: "Maintain_DB_Statistics"
-                  template:
-                    templateInputs:
-                      type: "Command"
-                      spec:
-                        type: "Command"
-                        environmentVariables:
-                        - name: "dbConnectionString"
-                          type: "String"
-                          value: "<+serviceVariables.dbConnectionString>"
-  - parallel:
     - stage:
-        name: "Maintain Indexes DB1"
-        identifier: "Maintain_Indexes_DB1"
+        name: Maintain statistics DB1
+        identifier: Run_smart_maintenance_statistics
         template:
-          templateRef: "DB_Maintenance_IndexesApply"
-          versionLabel: "v1"
+          templateRef: DB_Maintenance_StatisticsApply
+          versionLabel: v1
           templateInputs:
-            type: "Deployment"
+            type: Deployment
             spec:
               service:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
+                serviceRef: afDeployment
+                serviceInputs:
+                  serviceDefinition:
+                    type: WinRm
+                    spec:
+                      artifacts:
+                        primary:
+                          primaryArtifactRef: <+input>
+                          sources: <+input>
               environment:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
+                environmentRef: <+input>
+                environmentInputs: <+input>
+                serviceOverrideInputs: <+input>
+                infrastructureDefinitions: <+input>
               execution:
                 steps:
-                - step:
-                    identifier: "Maintain_DB_Indexes"
-                    template:
-                      templateInputs:
-                        type: "Command"
-                        spec:
-                          type: "Command"
-                          environmentVariables:
-                          - name: "dbConnectionString"
-                            type: "String"
-                            value: "<+serviceVariables.dbConnectionString>"
-                        timeout: "<+input>"
-    - stage:
-        name: "Maintain statistics DB2"
-        identifier: "Run_smart_maintenance_statistics_DB2"
-        template:
-          templateRef: "DB_Maintenance_StatisticsApply"
-          versionLabel: "v1"
-          templateInputs:
-            type: "Deployment"
-            spec:
-              service:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              environment:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              execution:
-                steps:
-                - step:
-                    identifier: "Maintain_DB_Statistics"
-                    template:
-                      templateInputs:
-                        type: "Command"
-                        spec:
-                          type: "Command"
-                          environmentVariables:
-                          - name: "dbConnectionString"
-                            type: "String"
-                            value: "<+serviceVariables.dbConnectionString2>"
-    - stage:
-        name: "Maintain statistics DB3"
-        identifier: "Stats_parameter"
-        template:
-          templateRef: "DB_Maintenance_StatisticsApply"
-          versionLabel: "v1"
-          templateInputs:
-            type: "Deployment"
-            spec:
-              service:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              environment:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              execution:
-                steps:
-                - step:
-                    identifier: "Maintain_DB_Statistics"
-                    template:
-                      templateInputs:
-                        type: "Command"
-                        spec:
-                          type: "Command"
-                          environmentVariables:
-                          - name: "dbConnectionString"
-                            type: "String"
-                            value: "<+serviceVariables.dbConnectionString3>"
-  - parallel:
-    - stage:
-        name: "Maintain Indexes DB2"
-        identifier: "Maintain_Indexes_DB2"
-        template:
-          templateRef: "DB_Maintenance_IndexesApply"
-          versionLabel: "v1"
-          templateInputs:
-            type: "Deployment"
-            spec:
-              service:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              environment:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              execution:
-                steps:
-                - step:
-                    identifier: "Maintain_DB_Indexes"
-                    template:
-                      templateInputs:
-                        type: "Command"
-                        spec:
-                          type: "Command"
-                          environmentVariables:
-                          - name: "dbConnectionString"
-                            type: "String"
-                            value: "<+serviceVariables.dbConnectionString2>"
-                        timeout: "<+input>"
-    - stage:
-        name: "Maintain Indexes DB3"
-        identifier: "Maintain_Indexes_DB3"
-        template:
-          templateRef: "DB_Maintenance_IndexesApply"
-          versionLabel: "v1"
-          templateInputs:
-            type: "Deployment"
-            spec:
-              service:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              environment:
-                useFromStage:
-                  stage: "Run_smart_maintenance_statistics"
-              execution:
-                steps:
-                - step:
-                    identifier: "Maintain_DB_Indexes"
-                    template:
-                      templateInputs:
-                        type: "Command"
-                        spec:
-                          type: "Command"
-                          environmentVariables:
-                          - name: "dbConnectionString"
-                            type: "String"
-                            value: "<+serviceVariables.dbConnectionString3>"
-                        timeout: "<+input>"
-  identifier: "DM_maintenance_statistics_All_Clone"
-  description: "Run statistics then indexes on all DBs in given environment"
-  name: "DB Maintenance - Clone"
+                  - step:
+                      identifier: Maintain_DB_Statistics
+                      template:
+                        templateInputs:
+                          type: Command
+                          spec:
+                            type: Command
+                            environmentVariables:
+                              - name: dbConnectionString
+                                type: String
+                                value: <+serviceVariables.dbConnectionString>
+    - parallel:
+        - stage:
+            name: Maintain Indexes DB1
+            identifier: Maintain_Indexes_DB1
+            template:
+              templateRef: DB_Maintenance_IndexesApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  environment:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Indexes
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+serviceVariables.dbConnectionString>
+                              timeout: <+input>
+        - stage:
+            name: Maintain statistics DB2
+            identifier: Run_smart_maintenance_statistics_DB2
+            template:
+              templateRef: DB_Maintenance_StatisticsApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  environment:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Statistics
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+serviceVariables.dbConnectionString2>
+        - stage:
+            name: Maintain statistics DB3
+            identifier: Stats_parameter
+            template:
+              templateRef: DB_Maintenance_StatisticsApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  environment:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Statistics
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+serviceVariables.dbConnectionString3>
+    - parallel:
+        - stage:
+            name: Maintain Indexes DB2
+            identifier: Maintain_Indexes_DB2
+            template:
+              templateRef: DB_Maintenance_IndexesApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  environment:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Indexes
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+serviceVariables.dbConnectionString2>
+                              timeout: <+input>
+        - stage:
+            name: Maintain Indexes DB3
+            identifier: Maintain_Indexes_DB3
+            template:
+              templateRef: DB_Maintenance_IndexesApply
+              versionLabel: v1
+              templateInputs:
+                type: Deployment
+                spec:
+                  service:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  environment:
+                    useFromStage:
+                      stage: Run_smart_maintenance_statistics
+                  execution:
+                    steps:
+                      - step:
+                          identifier: Maintain_DB_Indexes
+                          template:
+                            templateInputs:
+                              type: Command
+                              spec:
+                                type: Command
+                                environmentVariables:
+                                  - name: dbConnectionString
+                                    type: String
+                                    value: <+serviceVariables.dbConnectionString3>
+                              timeout: <+input>
+  identifier: DM_maintenance_statistics_All_Clone
+  description: Run statistics then indexes on all DBs in given environment
+  name: DB Maintenance - Clone
