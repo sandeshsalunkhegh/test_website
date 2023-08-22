@@ -126,65 +126,35 @@ pipeline:
                                   - name: dbConnectionString
                                     type: String
                                     value: <+serviceVariables.dbConnectionString3>
-    - parallel:
-        - stage:
-            name: Maintain Indexes DB2
-            identifier: Maintain_Indexes_DB2
-            template:
-              templateRef: DB_Maintenance_IndexesApply
-              versionLabel: v1
-              templateInputs:
-                type: Deployment
-                spec:
-                  service:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  environment:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  execution:
-                    steps:
-                      - step:
-                          identifier: Maintain_DB_Indexes
-                          template:
-                            templateInputs:
-                              type: Command
-                              spec:
-                                type: Command
-                                environmentVariables:
-                                  - name: dbConnectionString
-                                    type: String
-                                    value: <+serviceVariables.dbConnectionString2>
-                              timeout: <+input>
-        - stage:
-            name: Maintain Indexes DB3
-            identifier: Maintain_Indexes_DB3
-            template:
-              templateRef: DB_Maintenance_IndexesApply
-              versionLabel: v1
-              templateInputs:
-                type: Deployment
-                spec:
-                  service:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  environment:
-                    useFromStage:
-                      stage: Run_smart_maintenance_statistics
-                  execution:
-                    steps:
-                      - step:
-                          identifier: Maintain_DB_Indexes
-                          template:
-                            templateInputs:
-                              type: Command
-                              spec:
-                                type: Command
-                                environmentVariables:
-                                  - name: dbConnectionString
-                                    type: String
-                                    value: <+serviceVariables.dbConnectionString3>
-                              timeout: <+input>
+    - stage:
+        name: Maintain Indexes DB2
+        identifier: Maintain_Indexes_DB2
+        template:
+          templateRef: DB_Maintenance_IndexesApply
+          versionLabel: v1
+          templateInputs:
+            type: Deployment
+            spec:
+              service:
+                useFromStage:
+                  stage: Run_smart_maintenance_statistics
+              environment:
+                useFromStage:
+                  stage: Run_smart_maintenance_statistics
+              execution:
+                steps:
+                  - step:
+                      identifier: Maintain_DB_Indexes
+                      template:
+                        templateInputs:
+                          type: Command
+                          spec:
+                            type: Command
+                            environmentVariables:
+                              - name: dbConnectionString
+                                type: String
+                                value: <+serviceVariables.dbConnectionString2>
+                          timeout: <+input>
   identifier: DM_maintenance_statistics_All_Clone
   description: Run statistics then indexes on all DBs in given environment
   name: DB Maintenance - Clone
