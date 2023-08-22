@@ -1,0 +1,75 @@
+---
+pipeline:
+  projectIdentifier: "CDS71826"
+  orgIdentifier: "default"
+  tags: {}
+  stages:
+  - stage:
+      name: "Maintain statistics DB1"
+      identifier: "Run_smart_maintenance_statistics"
+      template:
+        templateRef: "DB_Maintenance_StatisticsApply"
+        versionLabel: "v1"
+        templateInputs:
+          type: "Deployment"
+          spec:
+            service:
+              serviceRef: "afDeployment"
+              serviceInputs:
+                serviceDefinition:
+                  type: "WinRm"
+                  spec:
+                    artifacts:
+                      primary:
+                        primaryArtifactRef: "<+input>"
+                        sources: "<+input>"
+            environment:
+              environmentRef: "<+input>"
+              environmentInputs: "<+input>"
+              serviceOverrideInputs: "<+input>"
+              infrastructureDefinitions: "<+input>"
+            execution:
+              steps:
+              - step:
+                  identifier: "Maintain_DB_Statistics"
+                  template:
+                    templateInputs:
+                      type: "Command"
+                      spec:
+                        type: "Command"
+                        environmentVariables:
+                        - name: "dbConnectionString"
+                          type: "String"
+                          value: "<+serviceVariables.dbConnectionString>"
+  - stage:
+      name: "Maintain Indexes DB1"
+      identifier: "Maintain_Indexes_DB1"
+      template:
+        templateRef: "DB_Maintenance_IndexesApply"
+        versionLabel: "v1"
+        templateInputs:
+          type: "Deployment"
+          spec:
+            service:
+              useFromStage:
+                stage: "Run_smart_maintenance_statistics"
+            environment:
+              useFromStage:
+                stage: "Run_smart_maintenance_statistics"
+            execution:
+              steps:
+              - step:
+                  identifier: "Maintain_DB_Indexes"
+                  template:
+                    templateInputs:
+                      type: "Command"
+                      spec:
+                        type: "Command"
+                        environmentVariables:
+                        - name: "dbConnectionString"
+                          type: "String"
+                          value: "<+serviceVariables.dbConnectionString>"
+                      timeout: "<+input>"
+  identifier: "DB_Maintenance_2_stages_ShellScript"
+  description: "Run statistics then indexes on all DBs in given environment"
+  name: "DB Maintenance - 2 stages - ShellScript"
