@@ -23,7 +23,7 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: curl --location 'https://example.com/'
+                        script: echo <+pipeline.stages.approve.spec.execution.steps.approve.status> == "SUCCEEDED"`
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
