@@ -38,7 +38,7 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: echo <+pipeline.stages.approve.spec.execution.steps.approve.status> == "SUCCEEDED"`
+                        script: echo <+pipeline.stages.approve.spec.execution.steps.approve.status>
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
