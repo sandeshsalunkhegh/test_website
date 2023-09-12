@@ -29,20 +29,6 @@ pipeline:
               environment:
                 useFromStage:
                   stage: Run_smart_maintenance_statistics
-              execution:
-                steps:
-                  - step:
-                      identifier: Maintain_DB_Indexes
-                      template:
-                        templateInputs:
-                          type: Command
-                          spec:
-                            type: Command
-                            environmentVariables:
-                              - name: dbConnectionString
-                                type: String
-                                value: <+serviceVariables.dbConnectionString>
-                          timeout: <+input>
   identifier: DB_Maintenance_Only_Indexes
   description: Run statistics then indexes on all DBs in given environment
   name: DB Maintenance - Only Indexes
