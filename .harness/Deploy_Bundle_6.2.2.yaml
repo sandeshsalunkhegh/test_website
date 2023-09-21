@@ -1,0 +1,155 @@
+template:
+  name: Deploy Bundle
+  type: Stage
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  tags: {}
+  spec:
+    type: Deployment
+    spec:
+      deploymentType: Kubernetes
+      service:
+        serviceRef: <+input>
+        serviceInputs: <+input>
+      environment:
+        environmentRef: <+input>
+        deployToAll: false
+        environmentInputs: <+input>
+        serviceOverrideInputs: <+input>
+        infrastructureDefinitions: <+input>
+      execution:
+        steps:
+          - parallel:
+              - step:
+                  name: Send Environment Starting Event
+                  identifier: Send_Environment_Starting_Event
+                  template:
+                    templateRef: Send_Deployment_Event
+                    versionLabel: 6.2.2
+                    gitBranch: test-patch
+                    templateInputs:
+                      type: ShellScript
+                      spec:
+                        environmentVariables:
+                          - name: EVENT_TYPE
+                            type: String
+                            value: ENVIRONMENT_STARTING
+              - step:
+                  name: Rollout Deployment
+                  identifier: rolloutDeployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: true
+                  failureStrategies: []
+                  when:
+                    stageStatus: All
+          - step:
+              name: Send Environment Complete Event
+              identifier: Send_Environment_Complete_Event
+              template:
+                templateRef: Send_Deployment_Event
+                versionLabel: 6.2.2
+                gitBranch: test-patch
+                templateInputs:
+                  type: ShellScript
+                  spec:
+                    environmentVariables:
+                      - name: EVENT_TYPE
+                        type: String
+                        value: ENVIRONMENT_COMPLETE
+                      - name: DEPLOYMENT_STATUS
+                        type: String
+                        value: SUCCESSFUL
+        rollbackSteps:
+          - parallel:
+              - step:
+                  name: Send Rollback Starting Event
+                  identifier: Send_Rollback_Starting_Event
+                  template:
+                    templateRef: Send_Deployment_Event
+                    versionLabel: 6.2.2
+                    gitBranch: test-patch
+                    templateInputs:
+                      type: ShellScript
+                      spec:
+                        environmentVariables:
+                          - name: EVENT_TYPE
+                            type: String
+                            value: ROLLBACK_STARTING
+              - step:
+                  name: Rollback Rollout Deployment
+                  identifier: rollbackRolloutDeployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec: {}
+                  when:
+                    stageStatus: All
+          - parallel:
+              - step:
+                  name: Send Rollback Complete Event
+                  identifier: Send_Rollback_Complete_Event
+                  template:
+                    templateRef: Send_Deployment_Event
+                    versionLabel: 6.2.2
+                    gitBranch: test-patch
+                    templateInputs:
+                      type: ShellScript
+                      spec:
+                        environmentVariables:
+                          - name: EVENT_TYPE
+                            type: String
+                            value: ROLLBACK_COMPLETE
+              - step:
+                  name: Send Environment Complete Failure Event
+                  identifier: Send_Environment_Complete_Failure_Event
+                  template:
+                    templateRef: Send_Deployment_Event
+                    versionLabel: 6.2.2
+                    gitBranch: test-patch
+                    templateInputs:
+                      type: ShellScript
+                      spec:
+                        environmentVariables:
+                          - name: EVENT_TYPE
+                            type: String
+                            value: ENVIRONMENT_COMPLETE
+                          - name: DEPLOYMENT_STATUS
+                            type: String
+                            value: FAILED
+    failureStrategies:
+      - onFailure:
+          errors:
+            - DelegateRestart
+            - DelegateProvisioning
+          action:
+            type: Retry
+            spec:
+              retryCount: 2
+              retryIntervals:
+                - 10s
+              onRetryFailure:
+                action:
+                  type: StageRollback
+      - onFailure:
+          errors:
+            - AllErrors
+          action:
+            type: StageRollback
+    variables:
+      - name: dist_tag
+        type: String
+        default: <+pipeline.variables.dist_tag>
+        description: git tag of the distribution bundle being deployed
+        value: <+input>
+      - name: tenant
+        type: String
+        default: <+pipeline.variables.tenant>
+        description: realm/tenant the pipeline deploys to
+        value: <+input>
+      - name: environment
+        type: String
+        value: <+spec.infrastructure.output.environment.name>
+  identifier: Deploy_Bundle
+  versionLabel: 6.2.2
