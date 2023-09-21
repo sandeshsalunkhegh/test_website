@@ -9,25 +9,21 @@ template:
     spec:
       deploymentType: Kubernetes
       service:
-        serviceRef: <+input>
-        serviceInputs:
-          serviceDefinition:
-            type: Kubernetes
-            spec:
-              manifests:
-                - manifest:
-                    identifier: manifest
-                    type: K8sManifest
-                    spec:
-                      store:
-                        type: Github
-                        spec:
-                          commitId: <+stage.variables.dist_tag>
+        serviceRef: service_1
       environment:
-        environmentRef: <+input>
+        environmentRef: test_1
         deployToAll: false
         infrastructureDefinitions:
-          - identifier: <+<+stage.variables.tenant>.replace("-","")>
+          - identifier: infrs_1
+            inputs:
+              identifier: infrs_1
+              type: KubernetesDirect
+              spec:
+                connectorRef: <+input>
+                environmentVariables:
+                  - name: var_1
+                    type: String
+                    value: <+input>
       execution:
         steps:
           - parallel:
