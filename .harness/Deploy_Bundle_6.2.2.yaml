@@ -10,13 +10,24 @@ template:
       deploymentType: Kubernetes
       service:
         serviceRef: <+input>
-        serviceInputs: <+input>
+        serviceInputs:
+          serviceDefinition:
+            type: Kubernetes
+            spec:
+              manifests:
+                - manifest:
+                    identifier: manifest
+                    type: K8sManifest
+                    spec:
+                      store:
+                        type: Github
+                        spec:
+                          commitId: <+stage.variables.dist_tag>
       environment:
         environmentRef: <+input>
         deployToAll: false
-        environmentInputs: <+input>
-        serviceOverrideInputs: <+input>
-        infrastructureDefinitions: <+input>
+        infrastructureDefinitions:
+          - identifier: <+<+stage.variables.tenant>.replace("-","")>
       execution:
         steps:
           - parallel:
@@ -34,12 +45,6 @@ template:
                           - name: EVENT_TYPE
                             type: String
                             value: ENVIRONMENT_STARTING
-                          - name: DEPLOYMENT_STATUS
-                            type: String
-                            value: <+input>.default(UNSPECIFIED).allowedValues(UNSPECIFIED,SUCCESSFUL,FAILED)
-                          - name: APPROVER_ACTION
-                            type: String
-                            value: <+input>
               - step:
                   name: Rollout Deployment
                   identifier: rolloutDeployment
@@ -68,9 +73,6 @@ template:
                       - name: DEPLOYMENT_STATUS
                         type: String
                         value: SUCCESSFUL
-                      - name: APPROVER_ACTION
-                        type: String
-                        value: <+input>
         rollbackSteps:
           - parallel:
               - step:
@@ -87,12 +89,6 @@ template:
                           - name: EVENT_TYPE
                             type: String
                             value: ROLLBACK_STARTING
-                          - name: DEPLOYMENT_STATUS
-                            type: String
-                            value: <+input>.default(UNSPECIFIED).allowedValues(UNSPECIFIED,SUCCESSFUL,FAILED)
-                          - name: APPROVER_ACTION
-                            type: String
-                            value: <+input>
               - step:
                   name: Rollback Rollout Deployment
                   identifier: rollbackRolloutDeployment
@@ -116,12 +112,6 @@ template:
                           - name: EVENT_TYPE
                             type: String
                             value: ROLLBACK_COMPLETE
-                          - name: DEPLOYMENT_STATUS
-                            type: String
-                            value: <+input>.default(UNSPECIFIED).allowedValues(UNSPECIFIED,SUCCESSFUL,FAILED)
-                          - name: APPROVER_ACTION
-                            type: String
-                            value: <+input>
               - step:
                   name: Send Environment Complete Failure Event
                   identifier: Send_Environment_Complete_Failure_Event
@@ -139,9 +129,6 @@ template:
                           - name: DEPLOYMENT_STATUS
                             type: String
                             value: FAILED
-                          - name: APPROVER_ACTION
-                            type: String
-                            value: <+input>
     failureStrategies:
       - onFailure:
           errors:
