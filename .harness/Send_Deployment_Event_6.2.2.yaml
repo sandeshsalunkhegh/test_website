@@ -123,7 +123,7 @@ template:
           type: String
           value: <+stage.variables.approver_email>
       delegateSelectors:
-        - harness-shell-git
+        - localdelegate
       outputVariables: []
     timeout: 10m
   versionNote: Keep consistent with harness-slack-notifications version.
