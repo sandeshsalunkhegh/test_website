@@ -1,0 +1,129 @@
+template:
+  name: Send_Deployment_Event
+  identifier: Send_Deployment_Event
+  versionLabel: 6.2.2
+  description: Sends a deployment event, using the deployment events tool built in to the delegate
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  type: Step
+  tags: {}
+  spec:
+    type: ShellScript
+    spec:
+      shell: Bash
+      onDelegate: true
+      source:
+        type: Inline
+        spec:
+          script: |-
+            if [[ "$ENVIRONMENT" == "null" ]]; then export ENVIRONMENT= ; fi
+            if [[ "$APPROVER_EMAIL" == "null" ]]; then export APPROVER_EMAIL= ; fi
+            if [[ "$FROM_DIST_TAG" == "null" ]]; then export FROM_DIST_TAG= ; fi
+            if [[ "$FROM_RELEASE_TAG" == "null" ]]; then export FROM_RELEASE_TAG= ; fi
+            if [[ "$FROM_VERSION" == "null" ]]; then export FROM_VERSION= ; fi
+            if [[ "$TO_DIST_TAG" == "null" ]]; then export TO_DIST_TAG= ; fi
+            if [[ "$TO_RELEASE_TAG" == "null" ]]; then export TO_RELEASE_TAG= ; fi
+            if [[ "$TO_VERSION" == "null" ]]; then export TO_VERSION= ; fi
+
+            if [[ "$EVENT_TYPE" == "APPROVAL_COMPLETE" ]]; then
+              if [[ "$APPROVER_ACTION" == "APPROVE" ]]; then
+                export APPROVAL_STATUS="APPROVED"
+              elif [[ "$APPROVER_ACTION" == "REJECT" ]]; then
+                export APPROVAL_STATUS="REJECTED"
+              else
+                export APPROVAL_STATUS="TIMEOUT"
+              fi
+            fi
+
+            set |grep -v GITHUB_PAT
+            send_event.sh
+      environmentVariables:
+        - name: EVENT_TYPE
+          type: String
+          value: <+input>.allowedValues(STARTING,COMPLETE,ROLLBACK_STARTING,ROLLBACK_COMPLETE,APPROVAL_PENDING,APPROVAL_COMPLETE,ENVIRONMENT_STARTING,ENVIRONMENT_COMPLETE,PIPELINE_DEQUEUED,PIPELINE_ENQUEUED)
+          description: type of event to send, required
+        - name: PIPELINE_EXECUTION_ID
+          type: String
+          value: <+pipeline.executionId>
+        - name: PIPELINE_EXECUTION_URL
+          type: String
+          value: <+pipeline.executionUrl>
+        - name: PIPELINE_EXECUTION_TIMESTAMP
+          type: String
+          value: <+pipeline.startTs>
+        - name: PIPELINE_NAME
+          type: String
+          value: <+pipeline.name>
+        - name: PIPELINE_ID
+          type: String
+          value: <+pipeline.identifier>
+        - name: PROJECT_NAME
+          type: String
+          value: <+project.name>
+        - name: PROJECT_ID
+          type: String
+          value: <+project.identifier>
+        - name: PROJECT_TAGS
+          type: String
+          value: <+project.tags>
+        - name: ORGANIZATION_NAME
+          type: String
+          value: <+org.name>
+        - name: ORGANIZATION_ID
+          type: String
+          value: <+org.identifier>
+        - name: TO_VERSION
+          type: String
+          value: <+pipeline.variables.service_version>
+        - name: TO_RELEASE_TAG
+          type: String
+          value: <+pipeline.variables.release_tag>
+        - name: TO_DIST_TAG
+          type: String
+          value: <+pipeline.variables.dist_tag>
+        - name: FROM_VERSION
+          type: String
+          value: <+pipeline.variables.from_service_version>
+        - name: FROM_RELEASE_TAG
+          type: String
+          value: <+pipeline.variables.from_release_tag>
+        - name: FROM_DIST_TAG
+          type: String
+          value: <+pipeline.variables.from_dist_tag>
+        - name: ENVIRONMENT
+          type: String
+          value: <+stage.variables.environment>
+        - name: PIPELINE_TENANT
+          type: String
+          value: <+pipeline.variables.tenant>
+        - name: PIPELINE_SLACK_CHANNEL
+          type: String
+          value: <+pipeline.variables.slack_channel>
+        - name: PIPELINE_NAMESPACE
+          type: String
+          value: <+pipeline.variables.namespace>
+        - name: PIPELINE_REPO_NAME
+          type: String
+          value: <+pipeline.variables.repo_name>
+        - name: PIPELINE_SERVICE_ID
+          type: String
+          value: <+pipeline.variables.harness_service_id>
+        - name: APPROVAL_GROUP
+          type: String
+          value: <+pipeline.variables.approval_group>
+        - name: DEPLOYMENT_STATUS
+          type: String
+          value: <+input>.default(UNSPECIFIED).allowedValues(UNSPECIFIED,SUCCESSFUL,FAILED)
+          description: deployment status, for COMPLETE and ENVIRONMENT_COMPLETE events
+        - name: APPROVER_ACTION
+          type: String
+          value: <+input>
+          description: approval status, for APPROVAL_COMPLETE events
+        - name: APPROVER_EMAIL
+          type: String
+          value: <+stage.variables.approver_email>
+      delegateSelectors:
+        - harness-shell-git
+      outputVariables: []
+    timeout: 10m
+  versionNote: Keep consistent with harness-slack-notifications version.
