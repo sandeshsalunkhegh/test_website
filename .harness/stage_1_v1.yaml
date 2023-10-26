@@ -1,0 +1,40 @@
+template:
+  name: stage_1
+  identifier: stage_1
+  versionLabel: v1
+  type: Stage
+  projectIdentifier: CDS71826
+  orgIdentifier: default
+  tags: {}
+  spec:
+    type: Deployment
+    spec:
+      deploymentType: Asg
+      environment:
+        environmentRef: asg_1
+        deployToAll: false
+        infrastructureDefinitions:
+          - identifier: asg_1
+      service:
+        serviceRef: asg_1
+      execution:
+        steps:
+          - step:
+              name: asg_step_1
+              identifier: asg_step_1
+              template:
+                templateRef: step_1
+                versionLabel: v1
+        rollbackSteps:
+          - step:
+              name: Asg Rolling Rollback
+              identifier: AsgRollingRollback
+              type: AsgRollingRollback
+              timeout: 10m
+              spec: {}
+    failureStrategies:
+      - onFailure:
+          errors:
+            - AllErrors
+          action:
+            type: StageRollback
