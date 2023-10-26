@@ -1,0 +1,13 @@
+pipeline:
+  name: asg_1
+  identifier: asg_1
+  projectIdentifier: CDS71826
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: asg_stage_1
+        identifier: asg_stage_1
+        template:
+          templateRef: stage_1
+          versionLabel: v1
