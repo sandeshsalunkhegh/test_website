@@ -53,7 +53,7 @@ pipeline:
                       spec:
                         script: |-
                           echo <+codebase.commitSha>
-                          echo testing
+                          echo testing pipeline
                           exit 0
                     environmentVariables: []
                     outputVariables: []
