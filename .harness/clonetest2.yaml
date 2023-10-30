@@ -1,0 +1,72 @@
+pipeline:
+  name: clone-test-2
+  identifier: clonetest2
+  tags: {}
+  stages:
+    - stage:
+        name: Git-Clone
+        identifier: GitClone
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: <+input>
+            serviceInputs: <+input>
+          environment:
+            environmentRef: <+input>
+            deployToAll: false
+            environmentInputs: <+input>
+            serviceOverrideInputs: <+input>
+            infrastructureDefinitions: <+input>
+          execution:
+            steps:
+              - stepGroup:
+                  name: test
+                  identifier: test
+                  steps:
+                    - step:
+                        type: GitClone
+                        name: GitClone_2
+                        identifier: GitClone_2
+                        spec:
+                          connectorRef: sandeshsalunkhe
+                          cloneDirectory: /.harness
+                          build:
+                            type: commitSha
+                            spec:
+                              commitSha: <+pipeline.variables.commitId>
+                  stepGroupInfra:
+                    type: KubernetesDirect
+                    spec:
+                      connectorRef: account.k8s
+                      namespace: kartikeya
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          echo <+codebase.commitSha>
+                          echo test
+                          ls
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+            rollbackSteps: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+  delegateSelectors:
+    - kubernetes-delegate-kartikeya
+  orgIdentifier: default
+  projectIdentifier: CDS71826
