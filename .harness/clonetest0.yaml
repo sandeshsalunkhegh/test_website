@@ -54,7 +54,7 @@ pipeline:
                         script: |-
                           echo <+codebase.commitSha>
                           echo test
-                          echo testing cloning pipeline
+                          exit 0
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
