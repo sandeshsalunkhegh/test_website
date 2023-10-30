@@ -54,7 +54,7 @@ pipeline:
                       spec:
                         script: |-
                           echo <+codebase.commitSha>
-                          ls
+                          echo null
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
