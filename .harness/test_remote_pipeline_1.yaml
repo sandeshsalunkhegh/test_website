@@ -1,0 +1,30 @@
+pipeline:
+  identifier: test_remote_pipeline_1
+  name: test_remote_pipeline_1
+  projectIdentifier: CDS71826
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        identifier: stage_1
+        type: Custom
+        name: stage_1
+        description: ""
+        spec:
+          execution:
+            steps:
+              - step:
+                  identifier: ShellScript_1
+                  type: ShellScript
+                  name: ShellScript_1
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo 0
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+        tags: {}
