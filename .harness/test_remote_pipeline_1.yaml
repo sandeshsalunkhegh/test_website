@@ -28,3 +28,50 @@ pipeline:
                     outputVariables: []
                   timeout: 10m
         tags: {}
+    - stage:
+        name: deploy_1
+        identifier: deploy_1
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: service_1
+          environment:
+            environmentRef: test_1
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: infrs_1
+                inputs:
+                  identifier: infrs_1
+                  type: KubernetesDirect
+                  spec:
+                    connectorRef: <+input>
+                    environmentVariables:
+                      - name: var_1
+                        type: String
+                        value: <+input>
+          execution:
+            steps:
+              - step:
+                  identifier: ShellScript_2
+                  type: ShellScript
+                  name: ShellScript_2
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo 0
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+            rollbackSteps: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
