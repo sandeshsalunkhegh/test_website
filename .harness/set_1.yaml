@@ -1,0 +1,24 @@
+inputSet:
+  name: set_1
+  identifier: set_1
+  orgIdentifier: default
+  projectIdentifier: CDS71826
+  pipeline:
+    identifier: test_remote_pipeline_1
+    stages:
+      - stage:
+          identifier: deploy_1
+          type: Deployment
+          spec:
+            environment:
+              infrastructureDefinitions:
+                - identifier: infrs_1
+                  inputs:
+                    identifier: infrs_1
+                    type: KubernetesDirect
+                    spec:
+                      connectorRef: account.Harness_Kubernetes_Cluster
+                      environmentVariables:
+                        - name: var_1
+                          type: String
+                          value: <+input>
