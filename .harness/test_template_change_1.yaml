@@ -1,0 +1,31 @@
+pipeline:
+  name: test_template_change_1
+  identifier: test_template_change_1
+  projectIdentifier: CDS71826
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: stage_1
+        identifier: stage_1
+        template:
+          templateRef: stg1
+          versionLabel: v1
+          templateInputs:
+            type: Deployment
+            spec:
+              environment:
+                environmentRef: test_1
+                infrastructureDefinitions:
+                  - identifier: infrs_1
+                    inputs:
+                      identifier: infrs_1
+                      type: KubernetesDirect
+                      spec:
+                        connectorRef: account.Harness_Kubernetes_Cluster
+                        environmentVariables:
+                          - name: var_1
+                            type: String
+                            value: ""
+              service:
+                serviceRef: service_1
