@@ -1,6 +1,6 @@
 pipeline:
   name: CDS-77208_2
-  identifier: CDS772082
+  identifier: CDS77208_2
   projectIdentifier: Sandesh_Test
   orgIdentifier: default
   tags: {}
