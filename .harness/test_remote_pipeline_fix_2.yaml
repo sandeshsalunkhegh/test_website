@@ -1,6 +1,6 @@
 pipeline:
-  name: test_remote_pipeline_fix_1
-  identifier: test_remote_pipeline_fix_1
+  name: test_remote_pipeline_fix_2
+  identifier: test_remote_pipeline_fix_2
   projectIdentifier: DoNotDelete_Sandesh
   orgIdentifier: default
   tags: {}
